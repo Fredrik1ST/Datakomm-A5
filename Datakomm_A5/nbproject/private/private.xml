@@ -3,9 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/C:/Users/Fredrik/Desktop/Coding/JavaProjects/Datakomm_A5/src/Examples/GETExample.java</file>
-            <file>file:/C:/Users/Fredrik/Desktop/Coding/JavaProjects/Datakomm_A5/src/Examples/JSONParseExample.java</file>
-            <file>file:/C:/Users/Fredrik/Desktop/Coding/JavaProjects/Datakomm_A5/src/Main.java</file>
+            <file>file:/C:/Users/Fredrik/Documents/GitHub/Datakomm-A5/Datakomm_A5/src/Main/JSONToolbox.java</file>
+            <file>file:/C:/Users/Fredrik/Documents/GitHub/Datakomm-A5/Datakomm_A5/src/Examples/JSONParseExample.java</file>
+            <file>file:/C:/Users/Fredrik/Documents/GitHub/Datakomm-A5/Datakomm_A5/src/Main/Main.java</file>
+            <file>file:/C:/Users/Fredrik/Documents/GitHub/Datakomm-A5/Datakomm_A5/src/Examples/POSTExample.java</file>
+            <file>file:/C:/Users/Fredrik/Documents/GitHub/Datakomm-A5/Datakomm_A5/src/Examples/GETExample.java</file>
         </group>
     </open-files>
 </project-private>

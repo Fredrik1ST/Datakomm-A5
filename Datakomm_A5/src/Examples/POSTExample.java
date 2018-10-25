@@ -10,7 +10,7 @@ public class POSTExample {
 
     public static void main(String[] args) {
         POSTExample postExample = new POSTExample("104.248.47.74", 80);
-        postExample.post3RandomNumbers();
+        postExample.post2RandomNumbers();
     }
 
     private String BASE_URL; // Base URL (address) of the server
@@ -24,23 +24,21 @@ public class POSTExample {
     public POSTExample(String host, int port) {
         BASE_URL = "http://" + host + ":" + port + "/";
     }
-
+    
     /**
      * Post three random numbers to a specific path on the web server
      */
-    public void post3RandomNumbers() {
+    public void post2RandomNumbers() {
         int a = (int) Math.round(Math.random() * 100);
         int b = (int) Math.round(Math.random() * 100);
-        int c = (int) Math.round(Math.random() * 100);
 
         JSONObject json = new JSONObject();
         json.put("a", a);
         json.put("b", b);
-        json.put("b", b);
         System.out.println("Posting this JSON data to server");
         System.out.println(json.toString());
         // TODO: change path to something correct
-        sendPost("dkrest/auth", json);
+        sendPost("dkrest/test/post", json);
     }
 
     /**
