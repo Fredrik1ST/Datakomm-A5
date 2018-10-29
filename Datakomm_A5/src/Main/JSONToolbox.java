@@ -19,6 +19,48 @@ import org.json.JSONObject;
 public class JSONToolbox {
 
     /**
+     * Send HTTP GET.
+     *
+     * @param URL The URL to send to.
+     * @return The server response as a string.
+     */
+    protected String sendGet(String URL) {
+        try {
+            String url = URL;
+            URL urlObj = new URL(url);
+            System.out.println("Sending HTTP GET to " + url);
+            HttpURLConnection con = (HttpURLConnection) urlObj.openConnection();
+
+            con.setRequestMethod("GET");
+
+            int responseCode = con.getResponseCode();
+            if (responseCode == 200) {
+                System.out.println("Server reached");
+                // Response was OK, read the body (data)
+                InputStream stream = con.getInputStream();
+                String responseBody = convertStreamToString(stream);
+                stream.close();
+                System.out.println("Response from the server:");
+                System.out.println(responseBody);
+                
+                return responseBody;
+
+            } else {
+                String responseDescription = con.getResponseMessage();
+                System.out.println("Request failed, response code: " + responseCode + " (" + responseDescription + ")");
+            }
+        } catch (ProtocolException e) {
+            System.out.println("Protocol not supported by the server");
+        } catch (IOException e) {
+            System.out.println("Something went wrong: " + e.getMessage());
+            e.printStackTrace();
+        }
+
+        return "";
+
+    }
+
+    /**
      * Send HTTP POST
      *
      * @param path Relative path in the API.
@@ -49,7 +91,7 @@ public class JSONToolbox {
                 stream.close();
                 System.out.println("Response from the server:");
                 System.out.println(responseBody);
-                
+
                 return responseBody;
             } else {
                 String responseDescription = con.getResponseMessage();
@@ -61,7 +103,7 @@ public class JSONToolbox {
             System.out.println("Something went wrong: " + e.getMessage());
             e.printStackTrace();
         }
-        
+
         return "";
     }
 
