@@ -1,5 +1,8 @@
 package Main;
 
+import java.security.NoSuchAlgorithmException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONObject;
 
 /**
@@ -10,8 +13,8 @@ import org.json.JSONObject;
 public class Main {
 
     // User-defined fields:
-    String email = "XXXXXXXXXXXXXXXXXXX"; // student email
-    String phone = "XXXXXXXXXXXXXXXXXXX"; // student phone #
+    String email = "XXXXXXXXXXXXXXXXXXXXXXX"; // student email
+    String phone = "XXXXXXXXXXXXXXXXXXXXXXX"; // student phone #
 
     // Import the class that handles parsing & requests
     JSONToolbox toolbox = new JSONToolbox();
@@ -38,7 +41,10 @@ public class Main {
         main.task2();
         main.getTask(3);
         main.task3();
-
+        main.getTask(4);
+        main.task4();
+        main.getTask(Integer.parseInt(main.sessionId));
+        main.getResults();
     }
 
     /*
@@ -81,7 +87,8 @@ public class Main {
                     task4 = toolbox.sendGet(url);
                     break;
                 default:
-                    System.out.println("EXERCISE 2 ERROR: Invalid task number!");
+                    System.out.println("ERROR: Abnormal task number");
+                    toolbox.sendGet(url);
                     break;
             }
         } else {
@@ -156,6 +163,65 @@ public class Main {
         json.put("sessionId", sessionId);
         json.put("result", product);
         toolbox.sendPost("http://104.248.47.74/dkrest/solve", json);
+    }
+
+    /**
+     * Excercise 4 : Task 4 - crack a MD5 hash of a PIN code, return the code.
+     */
+    private void task4() {
+        boolean crackingInProgress = true;
+        int pin = 0;
+        String pinString;
+        String crackHash;
+        String result = "NO RESULT";
+
+        // Extract the hash
+        String hash = parseTask(task4).get("arguments").toString();
+        hash = hash.replaceAll("[\\[\\]\"]", "");
+        System.out.println("\nFound hash: " + hash);
+
+        // Try cracking every possible combination using brute force
+        // We know that the combinations range from 0-9999
+        while (crackingInProgress) {
+            try {
+                // Format string to four digits
+                pinString = String.format("%04d", pin);
+                crackHash = toolbox.stringToMD5Hash(pinString);
+                if (crackHash.equals(hash)) {
+                    result = pinString;
+                    System.out.println("Hash cracked! The correct PIN is "
+                            + pinString + "!\n");
+                    crackingInProgress = false;
+                } else if (pin > 10000) {
+
+                }
+                pin++;
+            } catch (NoSuchAlgorithmException ex) {
+                Logger.getLogger(Main.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+
+        // Create and send result
+        JSONObject json = new JSONObject();
+        json.put("sessionId", sessionId);
+        json.put("pin", result);
+        toolbox.sendPost("http://104.248.47.74/dkrest/solve", json);
+    }
+
+    /**
+     * Spam the server to find tasks. Does this count as a DDOS?
+     */
+    private void huntDownTasks() {
+        for (int i=0; i<10000; i++) {
+            getTask(i);
+        }
+    }
+    
+    /**
+     * Request our score for this assignment
+     */
+    private void getResults() {
+        toolbox.sendGet("http://104.248.47.74/dkrest/results/" + sessionId);
     }
 
 }

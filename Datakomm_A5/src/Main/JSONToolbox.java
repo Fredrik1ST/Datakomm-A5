@@ -9,6 +9,9 @@ import java.net.HttpURLConnection;
 import java.net.ProtocolException;
 import java.net.URL;
 import org.json.JSONObject;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 
 /**
  * Contains methods for HTTP GET & POST, and JSON parsing.
@@ -42,7 +45,7 @@ public class JSONToolbox {
                 stream.close();
                 System.out.println("Response from the server:");
                 System.out.println(responseBody);
-                
+
                 return responseBody;
 
             } else {
@@ -108,7 +111,7 @@ public class JSONToolbox {
     }
 
     /**
-     * Read the whole content from an InputStream, return it as a string
+     * Read the whole content from an InputStream, return it as a string.
      *
      * @param is Inputstream to read the body from
      * @return The whole body as a string
@@ -126,6 +129,30 @@ public class JSONToolbox {
             System.out.println("Could not read the data from HTTP response: " + ex.getMessage());
         }
         return response.toString();
+    }
+
+    /**
+     * Take a string and creates an MD5 hash out of it.
+     * Most of the code is shamefully stolen from https://www.mkyong.com
+     *
+     * @param input the string to be converted
+     * @return the converted MD5 hash
+     */
+    protected String stringToMD5Hash(String input) throws NoSuchAlgorithmException {
+        String hash = "INVALID";
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] hashInBytes = md.digest(input.getBytes(StandardCharsets.UTF_8));
+
+            StringBuilder sb = new StringBuilder();
+            for (byte b : hashInBytes) {
+                sb.append(String.format("%02x", b));
+            }
+            hash = sb.toString();
+        } catch (NoSuchAlgorithmException nsae) {
+            System.out.println("\nERROR: INVALID ALGORITHM USED FOR HASH");
+        }
+        return hash;
     }
 
 }
