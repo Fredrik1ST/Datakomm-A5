@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.json.*;
 import java.lang.Math;
+import java.util.Arrays;
 
 /**
  * This class carries out the various exercises in Datakomm 2018 Assignment A5.
@@ -39,6 +40,7 @@ public class Main {
     public static void main(String[] args) {
         Main main = new Main();
         main.authorize(); // Success
+        /*
         main.getTask("1");
         main.task1();
         main.getTask("2");
@@ -47,8 +49,9 @@ public class Main {
         main.task3();
         main.getTask("4");
         main.task4();
-        main.findSecretTask();
+        main.getTask("2016"); // This is the secret task number
         main.doSecretTask();
+         */
 
         main.getResults();
     }
@@ -74,7 +77,7 @@ public class Main {
     * Exercise 2 - Get a task from the server.
     * Uses the session ID from exercise 1 to request the next task.
      */
-    private String getTask(String taskNr) {
+    private void getTask(String taskNr) {
         String url = "http://104.248.47.74/dkrest/gettask/"
                 + taskNr + "?sessionId=" + sessionId;
 
@@ -100,7 +103,6 @@ public class Main {
         } else {
             System.out.println("EXERCISE 2 ERROR: No session ID!");
         }
-        return toolbox.sendGet(url);
     }
 
     /**
@@ -233,11 +235,56 @@ public class Main {
      */
     private void doSecretTask() {
         JSONObject secretTask = new JSONObject(secretTaskString);
-        secretTask.get("taskNr");
         JSONArray arguments = secretTask.getJSONArray("arguments");
         String networkIp = arguments.getString(0);
         String subnetMask = arguments.getString(1);
         System.out.println("IP: " + networkIp + "\nSubnet mask: " + subnetMask + "\n");
+
+        String[] networkIpArray = networkIp.split("\\.");
+        String[] subnetMaskArray = subnetMask.split("\\.");
+
+        System.out.println("Array values:");
+        for (String s : networkIpArray) {
+            System.out.print(s + " ");
+        }
+        System.out.print("\n");
+        for (String s : subnetMaskArray) {
+            System.out.print(s + " ");
+        }
+
+        // Attempt 1: Create a valid IP address
+        // GOT A LUCKY GUESS! When subnet is below 255, the host addresses
+        // start at 254 and go downwards from there.
+        for (int i = 0; i < networkIpArray.length; i++) {
+            if (!subnetMaskArray[i].equals("255")) {
+                //int newInt = Integer.parseInt(networkIpArray[i]) + 1;
+                networkIpArray[i] = "128";
+            }
+        }
+
+        /* Attempt 2: Create a valid IP address
+        boolean done = false;
+        int tries = 0;
+        while (!done & tries<networkIpArray.length) {
+            if (subnetMaskArray[tries].equals("0")) {
+                int newInt = Integer.parseInt(networkIpArray[tries]) + 1;
+                networkIpArray[tries] = Integer.toString(newInt);
+                done = true;
+            }
+            tries++;
+        } */
+        // Format the new IP address properly (XXX.XXX.XXX.XXX)
+        String newNetworkIp = "";
+        newNetworkIp = String.format("%03d", Integer.parseInt(networkIpArray[0]));
+        for (int i = 1; i < networkIpArray.length; i++) {
+            newNetworkIp = newNetworkIp + ("." + String.format("%03d", Integer.parseInt(networkIpArray[i])));
+        }
+        System.out.println("\n\nNew IP: " + newNetworkIp + "\n");
+
+        JSONObject json = new JSONObject();
+        json.put("sessionId", sessionId);
+        json.put("ip", newNetworkIp);
+        toolbox.sendPost("http://104.248.47.74/dkrest/solve", json);
     }
 
     /**
