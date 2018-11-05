@@ -3,7 +3,8 @@ package Main;
 import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.json.JSONObject;
+import org.json.*;
+import java.lang.Math;
 
 /**
  * This class carries out the various exercises in Datakomm 2018 Assignment A5.
@@ -13,8 +14,8 @@ import org.json.JSONObject;
 public class Main {
 
     // User-defined fields:
-    String email = "XXXXXXXXXXXXXXXXXXXXXXX"; // student email
-    String phone = "XXXXXXXXXXXXXXXXXXXXXXX"; // student phone #
+    String email = "fredrtak@stud.ntnu.no"; // student email
+    String phone = "90908033"; // student phone #
 
     // Import the class that handles parsing & requests
     JSONToolbox toolbox = new JSONToolbox();
@@ -24,6 +25,9 @@ public class Main {
     String task2;
     String task3;
     String task4;
+    Double secretTaskNr;
+    String secretTaskString;
+
     String sessionId = "";
 
     /**
@@ -35,15 +39,17 @@ public class Main {
     public static void main(String[] args) {
         Main main = new Main();
         main.authorize(); // Success
-        main.getTask(1);
+        main.getTask("1");
         main.task1();
-        main.getTask(2);
+        main.getTask("2");
         main.task2();
-        main.getTask(3);
+        main.getTask("3");
         main.task3();
-        main.getTask(4);
+        main.getTask("4");
         main.task4();
-        main.getTask(Integer.parseInt(main.sessionId));
+        main.findSecretTask();
+        main.doSecretTask();
+
         main.getResults();
     }
 
@@ -68,32 +74,33 @@ public class Main {
     * Exercise 2 - Get a task from the server.
     * Uses the session ID from exercise 1 to request the next task.
      */
-    private void getTask(int taskNr) {
+    private String getTask(String taskNr) {
         String url = "http://104.248.47.74/dkrest/gettask/"
                 + taskNr + "?sessionId=" + sessionId;
 
         if (!sessionId.equals("")) {
             switch (taskNr) {
-                case 1:
+                case "1":
                     task1 = toolbox.sendGet(url);
                     break;
-                case 2:
+                case "2":
                     task2 = toolbox.sendGet(url);
                     break;
-                case 3:
+                case "3":
                     task3 = toolbox.sendGet(url);
                     break;
-                case 4:
+                case "4":
                     task4 = toolbox.sendGet(url);
                     break;
                 default:
                     System.out.println("ERROR: Abnormal task number");
-                    toolbox.sendGet(url);
+                    secretTaskString = toolbox.sendGet(url);
                     break;
             }
         } else {
             System.out.println("EXERCISE 2 ERROR: No session ID!");
         }
+        return toolbox.sendGet(url);
     }
 
     /**
@@ -209,14 +216,30 @@ public class Main {
     }
 
     /**
-     * Spam the server to find tasks. Does this count as a DDOS?
+     * Solve the riddle to find the secret task number.
+     * Seems to always be the square root of a certain number.
      */
-    private void huntDownTasks() {
-        for (int i=0; i<10000; i++) {
-            getTask(i);
-        }
+    private void findSecretTask() {
+        getTask("5");
+        JSONObject secretTask = new JSONObject(secretTaskString);
+        String secretString = secretTask.get("comment").toString();
+        secretString = secretString.replaceAll("[^0-9]", "");
+        int secretInt = Integer.parseInt(secretString);
+        secretTaskNr = Math.sqrt(secretInt);
     }
-    
+
+    /**
+     * Do the secret task.
+     */
+    private void doSecretTask() {
+        JSONObject secretTask = new JSONObject(secretTaskString);
+        secretTask.get("taskNr");
+        JSONArray arguments = secretTask.getJSONArray("arguments");
+        String networkIp = arguments.getString(0);
+        String subnetMask = arguments.getString(1);
+        System.out.println("IP: " + networkIp + "\nSubnet mask: " + subnetMask + "\n");
+    }
+
     /**
      * Request our score for this assignment
      */
